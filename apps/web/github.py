@@ -25,7 +25,7 @@ ctx_network_graph = Context(
 
 # USER-DEFINED VARIABLES
 
-repos = {"talon_community", "atom-talon"}
+repos = {"talon_community", "atom-talon", "NervanaSystems/coach"}
 
 lag = 0.2
 using_tridactyl = False
@@ -261,13 +261,8 @@ def scroll_up_most(m):
     tridactyl_mode()
 
 
-ctx_global.keymap(
-    {
-        "jet search": search,
-        "(notes | notifications)": goto_notifications,
-        # '(hover)': hover,
-    }
-)
+# TODO: create a site wide context
+ctx_repo.keymap({})
 
 ctx_repo.keymap(
     {
@@ -278,6 +273,10 @@ ctx_repo.keymap(
         "[go to] wiki": repo_goto_wiki,
         "find file": repo_find_file,
         "switch [(branch | tag)]": repo_switch_branch,
+        # TODO: create a site wide context
+        "jet search": search,
+        "notifications": goto_notifications,
+        # '(hover)': hover,
     }
 )
 
