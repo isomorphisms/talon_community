@@ -55,3 +55,16 @@ def faster():
 
 def slower():
     press("<")
+
+
+def skip():
+    fast_forward()
+
+
+
+def rewind():
+    press("left")
+
+
+def what():
+    rewind()
