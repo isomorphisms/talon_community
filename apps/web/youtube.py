@@ -68,3 +68,8 @@ def rewind():
 
 def what():
     rewind()
+
+
+def do_over():
+    press("0")
+
