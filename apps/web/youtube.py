@@ -44,3 +44,14 @@ context = Context("youtube", func=lambda app, win: title in win.title)
 context.keymap(
     {"download audio": youtube_download_audio, "download video": youtube_download_video}
 )
+
+def fast_forward():
+    press("right")
+
+
+def faster():
+    press(">")
+
+
+def slower():
+    press("<")
