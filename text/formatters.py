@@ -1,7 +1,9 @@
-from talon.voice import Word, Context, Str, press
+from talon.voice import Word, Context, press
 from talon import clip
 
 from ..utils import (
+    insert,
+    normalise_keys,
     parse_word,
     surround,
     text,
@@ -22,18 +24,10 @@ def title_case_capitalize_word(index, word, _):
         return word
 
 
-# Handle ( x | y ) syntax in formatter definitions. Do not be deceived, this is not real
-# Talon syntax
-def normalise_keys(dict):
-    normalised_dict = {}
-    for k, v in dict.items():
-        for cmd in k.strip("() ").split("|"):
-            normalised_dict[cmd.strip()] = v
-    return normalised_dict
-
-
 formatters = normalise_keys(
     {
+        "tree": (True, lambda i, word, _: word[0:3] if i == 0 else ""),
+        "quad": (True, lambda i, word, _: word[0:4] if i == 0 else ""),
         "(cram | camel)": (
             True,
             lambda i, word, _: word if i == 0 else word.capitalize(),
@@ -74,7 +68,7 @@ surrounders = normalise_keys(
         "dunder": (False, surround("__")),
         "angler": (False, surround("<", ">")),
         "(index | brax)": (False, surround("[", "]")),
-        "(kirk)": (False, surround("{", "}")),
+        "kirk": (False, surround("{", "}")),
         "precoif": (False, surround('("', '")')),
         "(prex | args)": (False, surround("(", ")")),
     }
@@ -102,14 +96,14 @@ def FormatText(m):
 
     smash = False
     for i, w in enumerate(words):
-        word = parse_word(w).lower()
+        word = parse_word(w, True)
         for name in reversed(fmt):
             smash, func = formatters[name]
             word = func(i, word, i == len(words) - 1)
         tmp.append(word)
 
     sep = "" if smash else " "
-    Str(sep.join(tmp))(None)
+    insert(sep.join(tmp))
     # if no words, move cursor inside surrounders
     if not words[0]:
         for i in range(len(tmp[0]) // 2):

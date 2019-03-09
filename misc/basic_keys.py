@@ -1,89 +1,77 @@
-from talon.voice import Context, Str, press
+from talon.voice import Context, press
 import string
+from ..utils import normalise_keys, insert
 
-alpha_alt='ancho basta coche drogas este fino gusto héctor índice juro capaz leído moda niño onda pinches queja renda sólo tapa uña visa cassiopeia cruce ya zeta'.split()
+alpha_alt='ancho basta coche dama este fino gusto héctor índice jura capaz leído moda nuco onda pinches queja raza sólo tapa uña visa cassiopeia cruce yolo zeta'.split()
+alphabet = dict(zip(alpha_alt, string.ascii_lowercase))
 
 f_keys = {f"F {i}": f"f{i}" for i in range(1, 13)}
-# arrows are separated because 'up' has a high false positive rate
-arrows = ["left", "right", "up", "down"]
-simple_keys = ["tab", "escape", "enter", "space", "home", "pageup", "pagedown", "end"]
-alternate_keys = {
-    "backspace": "backspace",
-    "delete": "backspace",
-    "forward delete": "delete",
-    # voicecode alternates
-    "skoosh": "space",
-    "tarp": "tab",
-    "crimp": "left",
-    "lloyd": "left",
-    "chris": "right",
-    "jeep": "up",
-    "down": "down",
-    "dune": "down",
-    "doom": "down",
-    "junk": "backspace",
-    "shock": "enter",
-    "scrap": "delete",
-    "spunk": "delete",
-    "randall": "esc",
-}
-symbols = {
-    # NOTE:  This should only contain symbols that do not require any modifier
-    # keys to press on a standard US keyboard layout. Commands for keys that do
-    # require modifiers (e.g. ``"caret": "^"`) should belong in
-    # ``text/symbol.py``.
-    "back tick": "`",
-    "tick": "`",
-    ",": ",",
-    "comma": ",",
-    "dot": ".",
-    "period": ".",
-    "semi": ";",
-    "semicolon": ";",
-    "quote": "'",
-    "quatchet": "'",
-    "L square": "[",
-    "left square": "[",
-    "left square bracket": "[",
-    "square": "[",
-    "R square": "]",
-    "right square": "]",
-    "right square bracket": "]",
-    "forward slash": "/",
-    "slash": "/",
-    "backslash": "\\",
-    "minus": "-",
-    "dash": "-",
-    "equals": "=",
-    "smaqual": "=",
-}
-modifiers = {
-    "command": "cmd",
-    "control": "ctrl",
-    "shift": "shift",
-    "alt": "alt",
-    "option": "alt",
-}
 
-alphabet = dict(zip(alpha_alt, string.ascii_lowercase))
-digits = {str(i): str(i) for i in range(10)}
-simple_keys = {k: k for k in simple_keys}
-arrows = {k: k for k in arrows}
+arrows = ['izquierdo', 'derecha', 'arriba', 'bajo']
+
+simple_keys = normalise_keys(
+    {
+        "(izque | quedo | crimp | lloyd)": "left",
+        "(recho | raquel | chris)": "right",
+        "ibis | jeep": "up",
+        "( dune | doom )": "down",
+        "( borrar | nega | backspace | junk )": "backspace",
+        "( delete | forward delete | scrap | spunk)": "delete",
+        "( espacio | vacio | nada | space | skoosh)": "space",
+        "( tipo | tab | tarp)": "tab",
+        "( vale | jale | enter | shock )": "enter",
+        "( escape | randall )": "escape",
+        "al cabo": "home",
+        "página abajo": "pagedown",
+        "página arriba": "pageup",
+        "al fin": "end",
+    }
+)
+
+symbols = normalise_keys(
+    {
+        # NOTE:  This should only contain symbols that do not require any modifier
+        # keys to press on a standard US keyboard layout. Commands for keys that do
+        # require modifiers (e.g. ``"caret": "^"`) should belong in
+        # ``text/symbol.py``.
+        "(tick | back tick)": "`",
+        "(comma | ,)": ",",
+        "( punto | dot | period)": ".",
+        "(semicolon | semi)": ";",
+        "(quote | quatchet)": "'",
+        "(esquina | square | L square | left square | left square bracket)": "[",
+        "(R square | right square | right square bracket)": "]",
+        "(solidus | slash | forward slash)": "/",
+        "(reverso | backslash )": "\\",
+        "(minus | dash)": "-",
+        "(igual | equals | smaqual)": "=",
+    }
+)
+
+modifiers = normalise_keys(
+    {
+        "(mandato | command)": "cmd",
+        "(control | troll)": "ctrl",
+        "shift": "shift",
+        "(alt | alterna | option | opción)": "alt",
+    }
+)
+
 keys = {}
 keys.update(f_keys)
 keys.update(simple_keys)
-keys.update(alternate_keys)
 keys.update(symbols)
+
+digits = {str(i): str(i) for i in range(10)}
+
+# separate arrow dictionary for combining with modifiers
+arrows = {"left": "left", "right": "right", "up": "up", "down": "down"}
 
 # map alnum and keys separately so engine gives priority to letter/number repeats
 keymap = keys.copy()
-keymap.update(arrows)
 keymap.update(alphabet)
 keymap.update(digits)
-
-
-def insert(s):
-    Str(s)(None)
+keymap.update(arrows)
 
 
 def get_modifiers(m):
@@ -134,8 +122,8 @@ ctx.keymap(
     }
 )
 ctx.set_list("alphabet", alphabet.keys())
-ctx.set_list("arrows", arrows.keys())
 ctx.set_list("digits", digits.keys())
 ctx.set_list("keys", keys.keys())
+ctx.set_list("arrows", arrows.keys())
 ctx.set_list("modifiers", modifiers.keys())
 ctx.set_list("keymap", keymap.keys())

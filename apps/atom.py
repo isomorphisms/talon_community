@@ -4,12 +4,11 @@ import re
 from talon.voice import Key, press, Str, Context, Rule
 from ..utils import (
     parse_words_as_integer,
-    parse_words,
     numeral_map,
     numerals,
     optional_numerals,
+    extract_num_from_m,
     text,
-    m_to_number,
 )
 from .. import utils
 
@@ -42,7 +41,12 @@ def text_to_number_wrapper(func):
     def wrapper(*args, **kwargs):
         if not kwargs and len(args) == 1:
             if isinstance(args[0], Rule):
-                args = (m_to_number(args[0]),) + args[1:]
+                args = (extract_num_from_m(args[0]),) + args[1:]
+            else:
+                print("couldn't find number")
+        else:
+            print("couldn't find number")
+
         func(*args, **kwargs)
 
     return wrapper
@@ -100,6 +104,7 @@ def toggle_comments(*unneeded):
 
 
 def snipline():
+    press("escape")
     press("ctrl-shift-k")
 
 
@@ -124,19 +129,19 @@ def find_previous(m):
 
 
 def copy_line(m):
-    line = m_to_number(m)
+    line = extract_num_from_m(m)
     execute_atom_command(COMMANDS.COPY_LINE, str(line))
 
 
 def move_line(m):
-    line = m_to_number(m)
+    line = extract_num_from_m(m)
     execute_atom_command(COMMANDS.MOVE_LINE, str(line))
 
 
 def select_lines(m):
     # NB: line_range is e.g. 99102, which is parsed in
     #  the atom package as lines 99..102
-    line_range = m_to_number(m)
+    line_range = extract_num_from_m(m)
     execute_atom_command(COMMANDS.SELECT_LINES, str(line_range))
 
 
@@ -157,7 +162,7 @@ def paste_line(m):
 
 
 def change_pain(m):
-    line = m_to_number(m)
+    line = extract_num_from_m(m)
     for i in range(10):
         press("cmd-k")
         press("cmd-left")
@@ -290,7 +295,7 @@ keymap = {
     "peach <dgndictation>": [Key("cmd-t"), text],
     "peachy <dgndictation>": [Key("cmd-t"), text, Key("enter")],
     "advanced open file": Key("cmd-alt-o"),
-    "pain" + numerals: change_pain,
+    "(pain | bang)" + numerals: change_pain,
     "tab" + numerals: jump_tab,
     "goneck": Key("cmd-shift-]"),
     "gopreev": Key("cmd-shift-["),
@@ -364,6 +369,8 @@ keymap = {
     # reflow
     "reflow": Key("cmd-alt-q"),
     "replace [left of] equals [with] return": replace_left_of_equals_with_return,
+    # config
+    "edit snippets": command("application open snippets"),
 }
 
 ctx.keymap(keymap)
