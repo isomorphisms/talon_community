@@ -80,7 +80,7 @@ alphanumeric = "abcdefghijklmnopqrstuvwxyz0123456789_"
 
 
 def big_word_neck(m):
-    return word_neck(m, valid_characters=set(alphanumeric) | set("/\\-_."))
+    return word_neck(m, valid_characters=set(alphanumeric) | set("/\\-_.>=<"))
 
 
 def word_neck(m, valid_characters=alphanumeric):
@@ -134,7 +134,7 @@ def word_neck(m, valid_characters=alphanumeric):
 
 
 def big_word_prev(m):
-    return word_prev(m, valid_characters=set(alphanumeric) | set("/\\-_."))
+    return word_prev(m, valid_characters=set(alphanumeric) | set("/\\-_.>=<"))
 
 
 def word_prev(m, valid_characters=alphanumeric):
@@ -211,9 +211,7 @@ ctx.keymap(
         "(delete around this | slurp)": Key("backspace delete"),
         "(delete line left | snip left | snipple)": Key("shift-cmd-left delete"),
         "(delete line right | snip right | snipper)": Key("shift-cmd-right delete"),
-        "(delete [this] line | snipline )": Key(
-            "shift-cmd-right delete delete ctrl-a cmd-left"
-        ),
+        "(delete [this] line)": Key("shift-cmd-right delete delete ctrl-a cmd-left"),
         "(delete word left | trough | steffi | carmex)": Key("alt-backspace"),
         "(delete word right | stippy | kite)": Key("alt-delete"),
         "(delete [this] word | slurpies)": Key("alt-backspace alt-delete"),
